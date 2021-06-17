@@ -2,7 +2,9 @@ package logone
 
 import (
 	"encoding/json"
+	"fmt"
 	"sort"
+	"strings"
 	"time"
 )
 
@@ -17,6 +19,7 @@ type LogEntry struct {
 	Elapsed    float64     `json:"elapsed,omitempty"`
 	Attributes interface{} `json:"attributes,omitempty"`
 	Error      string      `json:"error,omitempty"`
+	StackTrace []string    `json:"stackTrace,omitempty"`
 }
 
 func (lr *LogEntry) WithTags(tags ...string) *LogEntry {
@@ -30,9 +33,15 @@ func (lr *LogEntry) WithAttributes(i interface{}) *LogEntry {
 }
 
 func (lr *LogEntry) WithError(err error) *LogEntry {
-	if err != nil {
-		lr.Error = err.Error()
+	if err == nil {
+		return lr
 	}
+	lr.Error = err.Error()
+
+	// For errors.WithStack
+	msg := fmt.Sprintf("%+v", err)
+	msg = strings.Replace(msg, "\n\t", " - ", -1)
+	lr.StackTrace = strings.Split(msg, "\n")[1:];
 	return lr
 }
 
