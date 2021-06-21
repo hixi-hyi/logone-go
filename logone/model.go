@@ -42,6 +42,12 @@ func (lr *LogEntry) WithError(err error) *LogEntry {
 	msg := fmt.Sprintf("%+v", err)
 	msg = strings.Replace(msg, "\n\t", " - ", -1)
 	lr.StackTrace = strings.Split(msg, "\n")[1:];
+	for i := 0; i < len(lr.StackTrace); i++ {
+		if strings.HasPrefix(lr.StackTrace[i], "runtime.goexit") {
+			lr.StackTrace = lr.StackTrace[0:i+1]
+			break;
+		}
+	}
 	return lr
 }
 

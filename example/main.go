@@ -21,18 +21,21 @@ func main() {
 	logger.Debug("invoked").WithTags("critical").WithAttributes("xxxx")
 
 	if err := doErr(); err != nil {
-		logger.Error("doErr() fmt: %+v", err)
-		logger.Error("doErr() withError").WithError(err)
+		//logger.Error("doErr() fmt: %+v", err)
+		//logger.Error("doErr() withError").WithError(err)
 	}
 	if err := doWithStackErr(); err != nil {
+		logger.Error("doWithStackErr() fmt: %+v", err)
+		logger.Error("doWithStackErr() withError").WithError(err)
+		err = errors.WithStack(err)
 		logger.Error("doWithStackErr() fmt: %+v", err)
 		logger.Error("doWithStackErr() withError").WithError(err)
 	}
 
 	if err := doWrapErr(); err != nil {
 		err = errors.Wrap(err, "wrap2")
-		logger.Error("doWrapErr() fmt: %+v", err)
-		logger.Error("doWrapErr() withError").WithError(err)
+		//logger.Error("doWrapErr() fmt: %+v", err)
+		//logger.Error("doWrapErr() withError").WithError(err)
 	}
 
 	return
