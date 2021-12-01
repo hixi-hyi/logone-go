@@ -71,8 +71,11 @@ func (l *Logger) Finish() {
 	fmt.Println(string(logline))
 }
 
+// skip logone package
+const minSkipFileInfo = 3
+
 func (l *Logger) Record(severity Severity, message string) *LogEntry {
-	funcname, _, fileline := FileInfo(3)
+	funcname, _, fileline := l.FileInfo(minSkipFileInfo + l.Config.CallerSkip)
 	e := &LogEntry{
 		Severity: severity,
 		Message:  message,
@@ -102,12 +105,16 @@ func (l *Logger) Critical(f string, v ...interface{}) *LogEntry {
 	return l.Record(SeverityCritical, fmt.Sprintf(f, v...))
 }
 
-func FileInfo(depth int) (string, string, int) {
-	pc, _, _, ok := runtime.Caller(depth)
+func (l *Logger) FileInfo(skip int) (string, string, int) {
+	pc, _, _, ok := runtime.Caller(skip)
 	if !ok {
 		return "???", "???", 0
 	}
+
 	fn := runtime.FuncForPC(pc)
+	funcname := fn.Name()
+
 	filename, fileline := fn.FileLine(pc)
-	return fn.Name(), filename, fileline
+
+	return funcname, filename, fileline
 }

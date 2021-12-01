@@ -11,6 +11,7 @@ type Config struct {
 	OutputSeverity  Severity
 	JsonIndent      bool
 	ElapsedUnit     time.Duration
+	CallerSkip      int
 }
 
 type Manager struct {
